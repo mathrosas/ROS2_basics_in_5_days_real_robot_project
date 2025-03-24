@@ -33,4 +33,18 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_executable(wall_follower_node src/follow_wall.cpp)
+
+ament_target_dependencies(wall_follower_node rclcpp std_msgs geometry_msgs sensor_msgs)
+
+install(TARGETS
+  wall_follower_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 ament_package()
