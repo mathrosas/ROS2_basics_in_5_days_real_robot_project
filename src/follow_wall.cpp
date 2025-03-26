@@ -56,36 +56,30 @@ private:
   void laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
     this->latest_scan_ = msg;
 
-    int front_idx = angle_to_index(msg, 0);   // 0 degrees
-    int right_idx = angle_to_index(msg, -90); // 90 degrees
+    this->front_idx = angle_to_index(msg, 0);   // 0 degrees
+    this->right_idx = angle_to_index(msg, -90); // 90 degrees
 
-    float front_dist = min_range(msg->ranges, front_idx, 5);
-    float right_dist = min_range(msg->ranges, right_idx, 5);
+    this->front_dist = min_range(msg->ranges, front_idx, 5);
+    this->right_dist = min_range(msg->ranges, right_idx, 5);
 
-    RCLCPP_INFO(this->get_logger(), "front: %.2f m, right: %.2f m", front_dist,
-                right_dist);
+    RCLCPP_INFO(this->get_logger(), "front: %.2f m, right: %.2f m",
+                this->front_dist, this->right_dist);
   }
 
   void move_callback() {
     auto pub_msg = geometry_msgs::msg::Twist();
 
-    if (!latest_scan_)
+    if (!this->latest_scan_)
       return;
 
-    int front_idx = angle_to_index(latest_scan_, 0);
-    int right_idx = angle_to_index(latest_scan_, -90);
-
-    float front_dist = min_range(latest_scan_->ranges, front_idx, 3);
-    float right_dist = min_range(latest_scan_->ranges, right_idx, 3);
-
     // Obstacle avoidance logic
-    if (front_dist <= 0.5) {
+    if (this->front_dist <= 0.35) {
       pub_msg.linear.x = STOP;
       pub_msg.angular.z = ANGULAR_SPEED;
-    } else if (right_dist > 0.5) {
+    } else if (this->right_dist > 0.3) {
       pub_msg.linear.x = LINEAR_SPEED;
       pub_msg.angular.z = -ANGULAR_SPEED;
-    } else if (right_dist <= 0.4) {
+    } else if (this->right_dist <= 0.25) {
       pub_msg.linear.x = LINEAR_SPEED;
       pub_msg.angular.z = ANGULAR_SPEED;
     } else {
@@ -97,6 +91,10 @@ private:
   }
 
   // Member variables
+  int front_idx;
+  int right_idx;
+  float front_dist;
+  float right_dist;
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr subscription_;
