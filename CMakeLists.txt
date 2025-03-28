@@ -12,35 +12,28 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-<<<<<<< HEAD
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
 # Define your service file
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FindWall.srv"
 )
-
-# Include directories
-include_directories(include)
 
 # Add executables
 add_executable(wall_follower_node src/wall_follower.cpp)
 ament_target_dependencies(wall_follower_node rclcpp sensor_msgs geometry_msgs std_msgs)
 
-=======
-
-# Define your service file
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/FindWall.srv"
-)
-
-# Include directories
-include_directories(include)
-
-# Add executables
-add_executable(wall_follower_node src/follow_wall.cpp)
-ament_target_dependencies(wall_follower_node rclcpp sensor_msgs geometry_msgs std_msgs)
-
->>>>>>> 08f2d79f7c29c248f9227918201f9e71b72e1e1b
 add_executable(wall_finder_node src/wall_finder.cpp)
 ament_target_dependencies(wall_finder_node rclcpp sensor_msgs geometry_msgs std_msgs)
 
@@ -49,13 +42,16 @@ rosidl_target_interfaces(wall_follower_node ${PROJECT_NAME} "rosidl_typesupport_
 rosidl_target_interfaces(wall_finder_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 # Install nodes
-install(TARGETS wall_follower_node wall_finder_node
+install(TARGETS
+  wall_follower_node
+  wall_finder_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
 # Install launch files (optional, if you have launch files)
-install(DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 ament_package()
