@@ -1,50 +1,45 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 project(wall_follower)
 
-# Default to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
+# Enable C++17 explicitly
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
-# find dependencies
+# Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+# Define your service file
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/FindWall.srv"
+)
 
-add_executable(wall_follower_node src/follow_wall.cpp)
+# Include directories
+include_directories(include)
 
-ament_target_dependencies(wall_follower_node rclcpp std_msgs geometry_msgs sensor_msgs)
+# Add executables
+add_executable(wall_follower_node src/wall_follower.cpp)
+ament_target_dependencies(wall_follower_node rclcpp sensor_msgs geometry_msgs std_msgs)
 
-install(TARGETS
-  wall_follower_node
+add_executable(wall_finder_node src/wall_finder.cpp)
+ament_target_dependencies(wall_finder_node rclcpp sensor_msgs geometry_msgs std_msgs)
+
+# Link the rosidl interfaces
+rosidl_target_interfaces(wall_follower_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+rosidl_target_interfaces(wall_finder_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+
+# Install nodes
+install(TARGETS wall_follower_node wall_finder_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
+# Install launch files (optional, if you have launch files)
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()
