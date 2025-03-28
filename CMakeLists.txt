@@ -12,6 +12,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+<<<<<<< HEAD
 
 # Define your service file
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -25,6 +26,21 @@ include_directories(include)
 add_executable(wall_follower_node src/wall_follower.cpp)
 ament_target_dependencies(wall_follower_node rclcpp sensor_msgs geometry_msgs std_msgs)
 
+=======
+
+# Define your service file
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/FindWall.srv"
+)
+
+# Include directories
+include_directories(include)
+
+# Add executables
+add_executable(wall_follower_node src/follow_wall.cpp)
+ament_target_dependencies(wall_follower_node rclcpp sensor_msgs geometry_msgs std_msgs)
+
+>>>>>>> 08f2d79f7c29c248f9227918201f9e71b72e1e1b
 add_executable(wall_finder_node src/wall_finder.cpp)
 ament_target_dependencies(wall_finder_node rclcpp sensor_msgs geometry_msgs std_msgs)
 
