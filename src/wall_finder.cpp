@@ -1,12 +1,13 @@
-#include "geometry_msgs/msg/twist.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/laser_scan.hpp"
-#include "wall_follower/srv/find_wall.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <mutex>
 #include <vector>
+
+#include "geometry_msgs/msg/twist.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/laser_scan.hpp"
+#include "wall_follower/srv/find_wall.hpp"
 
 using std::placeholders::_1;
 using std::placeholders::_2;
